@@ -5,6 +5,7 @@ class ReservationInline(admin.TabularInline):
     model = Reservation
     extra = 1  # Number of empty forms to display
     readonly_fields = ("reservation_date",)  # Ensure this field is displayed as read-only
+    autocomplete_fields = ('participant',)  # Enable autocomplete for the participant field
 
 class ParticipantAdmin(admin.ModelAdmin):
     list_display = (
@@ -38,7 +39,8 @@ class ParticipantAdmin(admin.ModelAdmin):
         'participant_category',  # Updated to match your model
         'created_at',
     )
+    list_editable = ('first_name', 'last_name')
 
 # Register the Participant model with the customized admin
 admin.site.register(Participant, ParticipantAdmin)
-admin.site.register(Reservation)  # Uncomment if you need this to be available in the admin
+admin.site.register(Reservation)  # Register the Reservation model as well
