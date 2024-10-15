@@ -1,7 +1,44 @@
 from django.contrib import admin
-from .models import Participant,Reservation
+from .models import Participant, Reservation
 
-# Register your models here.
-admin.site.register(Participant) 
-admin.site.register(Reservation) 
+class ReservationInline(admin.TabularInline):
+    model = Reservation
+    extra = 1  # Number of empty forms to display
+    readonly_fields = ("reservation_date",)  # Ensure this field is displayed as read-only
 
+class ParticipantAdmin(admin.ModelAdmin):
+    list_display = (
+        "username",
+        "first_name",
+        "last_name",
+        "email",
+        "cin",
+        "participant_category",  # Ensure this matches your model field
+        "created_at",
+        "updated_at",
+    )
+    
+    search_fields = ("username", "first_name", "last_name", "email", "cin")
+    list_per_page = 10
+    ordering = ("created_at",)
+    readonly_fields = ("created_at", "updated_at")  # Ensure these fields are read-only
+
+    fieldsets = (
+        ('Informations personnelles', {
+            'fields': ('username', 'first_name', 'last_name', 'email', 'cin', 'participant_category') 
+        }),
+        ('Données de suivi', {
+            'fields': ('created_at', 'updated_at')
+        }),
+    )
+    
+    inlines = [ReservationInline]  # Include the ReservationInline to show reservations
+
+    list_filter = (
+        'participant_category',  # Updated to match your model
+        'created_at',
+    )
+
+# Register the Participant model with the customized admin
+admin.site.register(Participant, ParticipantAdmin)
+admin.site.register(Reservation)  # Uncomment if you need this to be available in the admin
